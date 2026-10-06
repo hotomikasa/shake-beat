@@ -1,5 +1,5 @@
-const CACHE = 'shake-beat-v2';
-const ASSETS = ['./', 'index.html', 'game.js', 'manifest.json', 'icon.svg'];
+const CACHE = 'shake-beat-v3';
+const ASSETS = ['./', 'index.html', 'game.js', 'manifest.json', 'icon.svg', 'character.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));

@@ -2,42 +2,69 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<meta name="theme-color" content="#111111">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#efe6ec">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg">
 <title>Shake Beat</title>
 <style>
+  :root { --bg: #efe6ec; --stripe: #e2d3dd; --ink: #1c1620; --sub: #7a6a76; --pink: #f6c9da; }
   * { box-sizing: border-box; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; height: 100%; background: #111; color: #eee; font-family: system-ui, sans-serif; overflow: hidden; }
-  #start, #game { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 16px; text-align: center; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: system-ui, sans-serif; overflow: hidden; }
   [hidden] { display: none !important; }
   h1 { margin: 0; letter-spacing: 4px; }
-  button { font-size: 20px; padding: 14px 40px; border: 0; border-radius: 999px; background: #4af; color: #012; font-weight: 700; }
-  #pulse { width: 140px; height: 140px; border-radius: 50%; background: #4af; opacity: .9; }
-  #judge { font-size: 36px; font-weight: 800; height: 44px; }
+  p { margin: 0; color: var(--sub); }
+  button { font-size: 20px; padding: 14px 40px; border: 0; border-radius: 999px; background: var(--ink); color: var(--pink); font-weight: 700; }
+
+  #start { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 16px; text-align: center; }
+  #start img { height: 38vh; max-width: 80vw; object-fit: contain; }
+
+  /* ゲーム画面: #stage ごと上下に揺らす。上下に余白を持たせて端が見えないようにする */
+  #game { position: fixed; inset: 0; overflow: hidden; }
+  #stage {
+    position: absolute; left: 0; right: 0; top: -80px; bottom: -80px;
+    padding-bottom: 130px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    background: repeating-linear-gradient(180deg, var(--bg) 0 38px, var(--stripe) 38px 40px);
+    will-change: transform;
+  }
+  #chara { height: 46vh; max-width: 86vw; object-fit: contain; pointer-events: none; }
+  #judge { font-size: 36px; font-weight: 800; height: 44px; line-height: 44px; }
   #stats { font-size: 18px; }
   #stats b { font-size: 24px; margin: 0 12px 0 4px; }
-  .ctl { font-size: 13px; color: #999; display: flex; align-items: center; gap: 8px; width: 100%; max-width: 320px; }
+
+  #panel {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: rgba(239, 230, 236, .94); border-top: 1px solid var(--stripe);
+  }
+  .ctl { font-size: 13px; color: var(--sub); display: flex; align-items: center; gap: 8px; width: 100%; max-width: 320px; }
   .ctl input { flex: 1; }
-  .ctl span { width: 44px; text-align: right; }
+  .ctl span { width: 48px; text-align: right; }
 </style>
 </head>
 <body>
 <div id="start">
+  <img src="character.png" alt="">
   <h1>SHAKE BEAT</h1>
   <p>音に合わせてスマホを振る</p>
   <button id="startBtn">START</button>
+  <p style="font-size:12px">PC確認用: スペースキー / 画面タップで代用</p>
 </div>
 
 <div id="game" hidden>
-  <div id="pulse"></div>
-  <div id="judge"></div>
-  <div id="stats">SCORE<b id="score">0</b>COMBO<b id="combo">0</b></div>
-  <label class="ctl">感度<input id="th" type="range" min="2" max="40" value="8"><span id="thv"></span></label>
-  <label class="ctl">補正<input id="off" type="range" min="-150" max="150" value="0"><span id="offv"></span></label>
-  <div class="ctl" id="sensor">センサー待機中</div>
-  <div class="ctl">PC確認用: スペースキー or 画面タップで代用</div>
+  <div id="stage">
+    <div id="stats">SCORE<b id="score">0</b>COMBO<b id="combo">0</b></div>
+    <div id="judge"></div>
+    <img id="chara" src="character.png" alt="">
+  </div>
+  <div id="panel">
+    <label class="ctl">揺れ幅<input id="amp" type="range" min="0" max="60" value="24"><span id="ampv"></span></label>
+    <label class="ctl">感度<input id="th" type="range" min="2" max="40" value="8"><span id="thv"></span></label>
+    <label class="ctl">補正<input id="off" type="range" min="-150" max="150" value="0"><span id="offv"></span></label>
+    <div class="ctl" id="sensor">センサー待機中</div>
+  </div>
 </div>
 
 <script src="game.js"></script>

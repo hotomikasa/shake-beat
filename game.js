@@ -53,6 +53,8 @@ function scheduleClicks() {
 }
 
 // ===== 判定 =====
+const COLOR = { perfect: '#c2185b', good: '#1b8a5a', miss: '#d32f2f' };
+
 function show(text, color) {
   const j = $('judge');
   j.textContent = text;
@@ -73,13 +75,13 @@ function onShake() {
   const d = Math.abs(now - (startTime + n * interval));
   if (d <= PERFECT) {
     hit.add(n); combo++; score += 100 + combo;
-    show('PERFECT', '#fd4');
+    show('PERFECT', COLOR.perfect);
   } else if (d <= GOOD) {
     hit.add(n); combo++; score += 50 + combo;
-    show('GOOD', '#4f8');
+    show('GOOD', COLOR.good);
   } else {
     combo = 0;
-    show('MISS', '#f55');
+    show('MISS', COLOR.miss);
   }
   setStats();
 }
@@ -90,7 +92,7 @@ function checkPassedBeats(now) {
     judgedUpTo++;
     if (!hit.has(judgedUpTo)) {
       combo = 0;
-      show('MISS', '#f55');
+      show('MISS', COLOR.miss);
       setStats();
     }
   }
@@ -117,15 +119,20 @@ window.addEventListener('devicemotion', (e) => {
 
 // PC確認用
 window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); onShake(); } });
-$('game').addEventListener('pointerdown', (e) => { if (e.target.tagName !== 'INPUT') onShake(); });
+$('game').addEventListener('pointerdown', (e) => { if (!e.target.closest('#panel')) onShake(); });
 
 // ===== 描画 =====
 function frame() {
   const now = ctx.currentTime;
-  const phase = (((now - startTime) / interval) % 1 + 1) % 1; // 0=拍の瞬間
-  const s = 1 - 0.35 * Math.min(phase * 3, 1);
-  $('pulse').style.transform = `scale(${s})`;
+  // 画面の揺れ: 拍の瞬間(phase=0)に一番下、拍の中間で一番上になる
+  const visual = now - (ctx.outputLatency || 0); // 出力遅延ぶん映像を遅らせて音と合わせる
+  const phase = (((visual - startTime) / interval) % 1 + 1) % 1;
+  const amp = Number($('amp').value);
+  const y = amp * Math.cos(phase * 2 * Math.PI);
+  $('stage').style.transform = `translateY(${y.toFixed(1)}px)`;
+
   checkPassedBeats(now);
+  $('ampv').textContent = amp + 'px';
   $('thv').textContent = $('th').value;
   $('offv').textContent = $('off').value + 'ms';
   $('sensor').textContent = evCount
