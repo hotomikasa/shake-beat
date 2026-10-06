@@ -1,4 +1,4 @@
-const CACHE = 'shake-beat-v1';
+const CACHE = 'shake-beat-v2';
 const ASSETS = ['./', 'index.html', 'game.js', 'manifest.json', 'icon.svg'];
 
 self.addEventListener('install', (e) => {
@@ -13,5 +13,14 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
+  // ネットワーク優先（更新が反映されやすい）、オフライン時のみキャッシュ
+  e.respondWith(
+    fetch(e.request)
+      .then((r) => {
+        const copy = r.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        return r;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });

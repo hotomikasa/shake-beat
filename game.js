@@ -97,12 +97,15 @@ function checkPassedBeats(now) {
 }
 
 // ===== センサー =====
+let evCount = 0, peak = 0;
 window.addEventListener('devicemotion', (e) => {
   if (!ctx) return;
   const a = e.accelerationIncludingGravity;
   if (!a || a.x == null) return;
+  evCount++;
   if (prev) {
     const d = Math.hypot(a.x - prev.x, a.y - prev.y, a.z - prev.z);
+    peak = Math.max(d, peak * 0.95);
     const th = Number($('th').value);
     if (d > th && ctx.currentTime - lastShake > COOLDOWN) {
       lastShake = ctx.currentTime;
@@ -125,6 +128,9 @@ function frame() {
   checkPassedBeats(now);
   $('thv').textContent = $('th').value;
   $('offv').textContent = $('off').value + 'ms';
+  $('sensor').textContent = evCount
+    ? `センサー受信中  振れ幅 ${peak.toFixed(1)} / 感度 ${$('th').value}`
+    : 'センサー信号なし（許可・ブラウザを確認）';
   requestAnimationFrame(frame);
 }
 
