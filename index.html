@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<title>Shake Beat</title>
+<style>
+  * { box-sizing: border-box; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #111; color: #eee; font-family: system-ui, sans-serif; overflow: hidden; }
+  #start, #game { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 16px; text-align: center; }
+  [hidden] { display: none !important; }
+  h1 { margin: 0; letter-spacing: 4px; }
+  button { font-size: 20px; padding: 14px 40px; border: 0; border-radius: 999px; background: #4af; color: #012; font-weight: 700; }
+  #pulse { width: 140px; height: 140px; border-radius: 50%; background: #4af; opacity: .9; }
+  #judge { font-size: 36px; font-weight: 800; height: 44px; }
+  #stats { font-size: 18px; }
+  #stats b { font-size: 24px; margin: 0 12px 0 4px; }
+  .ctl { font-size: 13px; color: #999; display: flex; align-items: center; gap: 8px; width: 100%; max-width: 320px; }
+  .ctl input { flex: 1; }
+  .ctl span { width: 44px; text-align: right; }
+</style>
+</head>
+<body>
+<div id="start">
+  <h1>SHAKE BEAT</h1>
+  <p>音に合わせてスマホを振る</p>
+  <button id="startBtn">START</button>
+</div>
+
+<div id="game" hidden>
+  <div id="pulse"></div>
+  <div id="judge"></div>
+  <div id="stats">SCORE<b id="score">0</b>COMBO<b id="combo">0</b></div>
+  <label class="ctl">感度<input id="th" type="range" min="3" max="40" value="15"><span id="thv"></span></label>
+  <label class="ctl">補正<input id="off" type="range" min="-150" max="150" value="0"><span id="offv"></span></label>
+  <div class="ctl">PC確認用: スペースキー or 画面タップで代用</div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
